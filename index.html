@@ -91,6 +91,186 @@
             transition: opacity 0.3s;
         }
 
+        /* 弹幕互动面板 */
+        #danmakuPanel {
+            position: fixed;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 220px;
+            background: rgba(10, 0, 30, 0.85);
+            border: 1px solid rgba(136, 102, 255, 0.4);
+            border-radius: 8px;
+            padding: 15px;
+            z-index: 150;
+            backdrop-filter: blur(10px);
+        }
+
+        #danmakuPanel h3 {
+            color: #8866ff;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(136, 102, 255, 0.3);
+        }
+
+        #audienceIntent {
+            margin-bottom: 15px;
+        }
+
+        #intentBar {
+            height: 8px;
+            background: linear-gradient(90deg, #ff4444 0%, #888 50%, #44ff44 100%);
+            border-radius: 4px;
+            position: relative;
+            margin-bottom: 8px;
+        }
+
+        #intentIndicator {
+            position: absolute;
+            top: -4px;
+            width: 16px;
+            height: 16px;
+            background: #fff;
+            border-radius: 50%;
+            transform: translateX(-50%);
+            left: 50%;
+            box-shadow: 0 0 10px #fff;
+            transition: left 0.5s ease-out;
+        }
+
+        #intentLabel {
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            color: #888;
+            transition: color 0.3s;
+        }
+
+        #danmakuList {
+            max-height: 200px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+        }
+
+        .danmaku-item {
+            padding: 6px 8px;
+            margin-bottom: 4px;
+            border-radius: 4px;
+            font-size: 11px;
+            animation: danmakuFadeIn 0.3s ease-out;
+        }
+
+        .danmaku-item.buff {
+            background: rgba(0, 255, 136, 0.15);
+            border-left: 2px solid #00ff88;
+            color: #00ff88;
+        }
+
+        .danmaku-item.debuff {
+            background: rgba(255, 68, 68, 0.15);
+            border-left: 2px solid #ff4444;
+            color: #ff4444;
+        }
+
+        .danmaku-item.neutral {
+            background: rgba(136, 136, 136, 0.15);
+            border-left: 2px solid #888;
+            color: #aaa;
+        }
+
+        .danmaku-item.special {
+            background: rgba(255, 200, 0, 0.15);
+            border-left: 2px solid #ffc800;
+            color: #ffc800;
+        }
+
+        .danmaku-username {
+            font-weight: bold;
+            margin-right: 5px;
+        }
+
+        @keyframes danmakuFadeIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        #activeEffects {
+            border-top: 1px solid rgba(136, 102, 255, 0.3);
+            padding-top: 10px;
+        }
+
+        #activeEffects h4 {
+            color: #666;
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .effect-tag {
+            display: inline-block;
+            padding: 3px 8px;
+            margin: 2px;
+            border-radius: 3px;
+            font-size: 10px;
+            animation: effectPulse 1s ease-in-out infinite;
+        }
+
+        .effect-tag.buff {
+            background: rgba(0, 255, 136, 0.3);
+            color: #00ff88;
+        }
+
+        .effect-tag.debuff {
+            background: rgba(255, 68, 68, 0.3);
+            color: #ff4444;
+        }
+
+        .effect-tag.special {
+            background: rgba(255, 200, 0, 0.3);
+            color: #ffc800;
+        }
+
+        @keyframes effectPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        /* 中央通知 */
+        #centerNotification {
+            position: fixed;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            text-align: center;
+            z-index: 250;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.3s, transform 0.3s;
+        }
+
+        #centerNotification.show {
+            opacity: 1;
+            transform: translateX(-50%) scale(1.1);
+        }
+
+        #notificationUser {
+            font-size: 18px;
+            color: #ffc800;
+            text-shadow: 0 0 20px #ffc800;
+            margin-bottom: 5px;
+        }
+
+        #notificationAction {
+            font-size: 28px;
+            font-weight: bold;
+            color: #fff;
+            text-shadow: 0 0 30px currentColor;
+        }
+
         #instructions {
             position: fixed;
             bottom: 20px;
@@ -145,6 +325,19 @@
             transition: opacity 0.2s;
         }
 
+        #visionOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 45;
+            opacity: 0;
+            background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.95) 60%);
+            transition: opacity 0.5s;
+        }
+
         #gameOver {
             position: fixed;
             top: 50%;
@@ -194,15 +387,23 @@
             to { text-shadow: 0 0 20px currentColor, 0 0 40px currentColor, 0 0 60px currentColor; }
         }
 
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.05); }
+        /* 滚动条样式 */
+        #danmakuList::-webkit-scrollbar {
+            width: 4px;
+        }
+        #danmakuList::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.3);
+        }
+        #danmakuList::-webkit-scrollbar-thumb {
+            background: #8866ff;
+            border-radius: 2px;
         }
     </style>
 </head>
 <body>
     <canvas id="gameCanvas"></canvas>
     <div id="warningOverlay"></div>
+    <div id="visionOverlay"></div>
 
     <div id="ui">
         <div id="score" class="glow-text">0</div>
@@ -217,6 +418,28 @@
 
     <div id="flowState"></div>
 
+    <!-- 弹幕互动面板 -->
+    <div id="danmakuPanel">
+        <h3>观众互动</h3>
+        <div id="audienceIntent">
+            <div id="intentBar">
+                <div id="intentIndicator"></div>
+            </div>
+            <div id="intentLabel">中立</div>
+        </div>
+        <div id="danmakuList"></div>
+        <div id="activeEffects">
+            <h4>当前效果</h4>
+            <div id="effectTags"></div>
+        </div>
+    </div>
+
+    <!-- 中央通知 -->
+    <div id="centerNotification">
+        <div id="notificationUser"></div>
+        <div id="notificationAction"></div>
+    </div>
+
     <div id="gameStats">
         <div id="maxCombo">最高连击: 0</div>
         <div id="surviveTime">存活时间: 0s</div>
@@ -224,7 +447,7 @@
     </div>
 
     <div id="instructions">
-        WASD / 方向键 移动 | 鼠标 瞄准 | 空格 冲刺 | 避开红色坍缩区！
+        WASD / 方向键 移动 | 鼠标 瞄准 | 空格 冲刺 | 观众弹幕会影响游戏！
     </div>
 
     <button id="audioToggle">🔊 音效</button>
@@ -241,8 +464,8 @@
 
     <script>
 // ============================================
-// 星际调度员 - Interstellar Dispatcher
-// 混沌干扰系统 + 心流连击机制
+// 星际调度员 - Interstellar Dispatcher v3.0
+// 观众弹幕互动系统
 // ============================================
 
 const canvas = document.getElementById('gameCanvas');
@@ -256,52 +479,557 @@ resizeCanvas();
 window.addEventListener('resize', resizeCanvas);
 
 // ============================================
-// 色调系统 - 心流阶段色彩
+// 模拟弹幕系统
+// ============================================
+const danmakuSystem = {
+    // 模拟用户名库
+    usernames: [
+        '星际旅者', '量子猫咪', '暗物质君', '超新星', '黑洞边缘',
+        '光速飞船', '银河守望', '虫洞探险', '脉冲星', '彗星尾巴',
+        '星云漫步', '太空海盗', '反物质', '时空裂隙', '宇宙尘埃',
+        '深空信号', '轨道漂流', '引力波', '红移观测', '蓝移追踪',
+        '等离子体', '磁暴战士', '射线风暴', '中子之心', '夸克汤'
+    ],
+
+    // 弹幕内容库
+    messages: {
+        buff: [
+            { text: '快', weight: 30 },
+            { text: '加油！', weight: 20 },
+            { text: '冲冲冲', weight: 15 },
+            { text: '护盾给主播', weight: 10 },
+            { text: '无敌！', weight: 8 },
+            { text: '666', weight: 25 },
+            { text: '太强了', weight: 15 }
+        ],
+        debuff: [
+            { text: '乱', weight: 30 },
+            { text: '哈哈哈', weight: 20 },
+            { text: '假的假的', weight: 15 },
+            { text: '迷惑他', weight: 12 },
+            { text: '扭曲！', weight: 10 },
+            { text: '看不清了吧', weight: 8 }
+        ],
+        neutral: [
+            { text: '?', weight: 20 },
+            { text: '加油', weight: 25 },
+            { text: '好看', weight: 15 },
+            { text: '牛', weight: 20 },
+            { text: '主播厉害', weight: 15 },
+            { text: '继续继续', weight: 15 }
+        ],
+        special: [
+            { text: '【投掷引力弹】', gift: 'gravityBomb', weight: 5 },
+            { text: '【赠送能量护盾】', gift: 'shield', weight: 8 },
+            { text: '【释放视野迷雾】', gift: 'fog', weight: 5 },
+            { text: '【触发重力翻转】', gift: 'gravityFlip', weight: 4 },
+            { text: '【召唤虚假核心】', gift: 'fakeCore', weight: 6 },
+            { text: '【灵敏度提升】', gift: 'agility', weight: 7 },
+            { text: '【时间减速】', gift: 'slowmo', weight: 3 }
+        ]
+    },
+
+    // 状态
+    intentScore: 0, // -100 (恶意) 到 +100 (善意)
+    messageHistory: [],
+    lastCommandTime: 0,
+    commandInterval: 10, // 每10秒执行一次随机指令
+
+    getRandomUsername() {
+        return this.usernames[Math.floor(Math.random() * this.usernames.length)];
+    },
+
+    getWeightedRandom(items) {
+        const totalWeight = items.reduce((sum, item) => sum + item.weight, 0);
+        let random = Math.random() * totalWeight;
+        for (const item of items) {
+            random -= item.weight;
+            if (random <= 0) return item;
+        }
+        return items[0];
+    },
+
+    generateDanmaku() {
+        // 根据当前意图偏向生成弹幕
+        const rand = Math.random() * 100;
+        let category;
+
+        if (rand < 5) {
+            category = 'special';
+        } else if (rand < 35) {
+            category = this.intentScore > 0 ? 'buff' : 'debuff';
+        } else if (rand < 60) {
+            category = this.intentScore < 0 ? 'debuff' : 'buff';
+        } else {
+            category = 'neutral';
+        }
+
+        const message = this.getWeightedRandom(this.messages[category]);
+        const username = this.getRandomUsername();
+
+        return {
+            username,
+            text: message.text,
+            category,
+            gift: message.gift || null,
+            timestamp: Date.now()
+        };
+    },
+
+    processMessage(danmaku) {
+        // 更新意图分数
+        switch (danmaku.category) {
+            case 'buff':
+                this.intentScore = Math.min(100, this.intentScore + 5);
+                break;
+            case 'debuff':
+                this.intentScore = Math.max(-100, this.intentScore - 5);
+                break;
+            case 'special':
+                // 特殊礼物根据效果调整
+                if (['shield', 'agility', 'slowmo'].includes(danmaku.gift)) {
+                    this.intentScore = Math.min(100, this.intentScore + 15);
+                } else {
+                    this.intentScore = Math.max(-100, this.intentScore - 15);
+                }
+                break;
+        }
+
+        // 意图自然衰减
+        this.intentScore *= 0.98;
+
+        // 添加到历史
+        this.messageHistory.unshift(danmaku);
+        if (this.messageHistory.length > 20) {
+            this.messageHistory.pop();
+        }
+
+        // 触发效果
+        if (danmaku.gift) {
+            this.triggerGiftEffect(danmaku);
+        } else {
+            this.triggerMessageEffect(danmaku);
+        }
+
+        // 更新UI
+        this.updateUI(danmaku);
+    },
+
+    triggerMessageEffect(danmaku) {
+        if (danmaku.category === 'buff') {
+            if (danmaku.text === '快' || danmaku.text === '冲冲冲') {
+                effectSystem.addEffect('speedBoost', 3, '速度提升');
+            } else if (danmaku.text === '护盾给主播' || danmaku.text === '无敌！') {
+                effectSystem.addEffect('miniShield', 1.5, '微型护盾');
+            }
+        } else if (danmaku.category === 'debuff') {
+            if (danmaku.text === '乱') {
+                effectSystem.addEffect('gridDistort', 4, '网格扭曲');
+            } else if (danmaku.text === '假的假的' || danmaku.text === '迷惑他') {
+                spawnFakeCores(2);
+            }
+        }
+    },
+
+    triggerGiftEffect(danmaku) {
+        showCenterNotification(danmaku.username, danmaku.text);
+        audio.playGiftSound();
+
+        switch (danmaku.gift) {
+            case 'gravityBomb':
+                spawnGravityVortex(danmaku.username);
+                break;
+            case 'shield':
+                effectSystem.addEffect('shield', 5, '能量护盾');
+                player.invincible = 5;
+                break;
+            case 'fog':
+                effectSystem.addEffect('visionFog', 6, '视野迷雾');
+                break;
+            case 'gravityFlip':
+                effectSystem.addEffect('gravityFlip', 5, '重力翻转');
+                break;
+            case 'fakeCore':
+                spawnFakeCores(5);
+                break;
+            case 'agility':
+                effectSystem.addEffect('agility', 6, '灵敏提升');
+                break;
+            case 'slowmo':
+                effectSystem.addEffect('slowmo', 4, '时间减速');
+                break;
+        }
+    },
+
+    executeRandomCommand() {
+        // 从特殊指令中随机选择一个
+        const commands = [
+            { name: '重力翻转', effect: () => effectSystem.addEffect('gravityFlip', 4, '重力翻转') },
+            { name: '视野缩小', effect: () => effectSystem.addEffect('visionFog', 5, '视野迷雾') },
+            { name: '网格扭曲', effect: () => effectSystem.addEffect('gridDistort', 5, '网格扭曲') },
+            { name: '虚假核心', effect: () => spawnFakeCores(3) },
+            { name: '引力漩涡', effect: () => spawnGravityVortex('系统') },
+            { name: '速度狂潮', effect: () => effectSystem.addEffect('speedBoost', 5, '速度狂潮') },
+            { name: '临时护盾', effect: () => { effectSystem.addEffect('shield', 3, '临时护盾'); player.invincible = 3; } }
+        ];
+
+        const cmd = commands[Math.floor(Math.random() * commands.length)];
+
+        showCenterNotification('【系统指令】', cmd.name + '已触发！');
+        audio.playCommandSound();
+        cmd.effect();
+
+        // 添加到弹幕列表
+        this.processMessage({
+            username: '系统',
+            text: `【${cmd.name}】`,
+            category: 'special',
+            gift: null,
+            timestamp: Date.now()
+        });
+    },
+
+    updateUI(danmaku) {
+        // 更新意图指示器
+        const indicator = document.getElementById('intentIndicator');
+        const label = document.getElementById('intentLabel');
+        const percent = (this.intentScore + 100) / 2;
+        indicator.style.left = `${percent}%`;
+
+        if (this.intentScore > 30) {
+            label.textContent = '观众助力中';
+            label.style.color = '#00ff88';
+        } else if (this.intentScore < -30) {
+            label.textContent = '观众捣乱中';
+            label.style.color = '#ff4444';
+        } else {
+            label.textContent = '中立观望';
+            label.style.color = '#888';
+        }
+
+        // 添加弹幕到列表
+        const list = document.getElementById('danmakuList');
+        const item = document.createElement('div');
+        item.className = `danmaku-item ${danmaku.category}`;
+        item.innerHTML = `<span class="danmaku-username">${danmaku.username}:</span>${danmaku.text}`;
+        list.insertBefore(item, list.firstChild);
+
+        // 限制列表长度
+        while (list.children.length > 15) {
+            list.removeChild(list.lastChild);
+        }
+    },
+
+    update(dt) {
+        // 自动生成弹幕
+        if (Math.random() < dt * 1.5) { // 平均每0.67秒一条
+            const danmaku = this.generateDanmaku();
+            this.processMessage(danmaku);
+        }
+
+        // 定时执行随机指令
+        this.lastCommandTime += dt;
+        if (this.lastCommandTime >= this.commandInterval) {
+            this.lastCommandTime = 0;
+            this.executeRandomCommand();
+        }
+    },
+
+    reset() {
+        this.intentScore = 0;
+        this.messageHistory = [];
+        this.lastCommandTime = 0;
+        document.getElementById('danmakuList').innerHTML = '';
+        document.getElementById('intentIndicator').style.left = '50%';
+        document.getElementById('intentLabel').textContent = '中立';
+    }
+};
+
+// ============================================
+// 效果系统
+// ============================================
+const effectSystem = {
+    activeEffects: {},
+
+    addEffect(type, duration, displayName) {
+        this.activeEffects[type] = {
+            duration,
+            maxDuration: duration,
+            displayName
+        };
+        this.updateUI();
+    },
+
+    removeEffect(type) {
+        delete this.activeEffects[type];
+        this.updateUI();
+    },
+
+    hasEffect(type) {
+        return !!this.activeEffects[type];
+    },
+
+    update(dt) {
+        for (const type in this.activeEffects) {
+            this.activeEffects[type].duration -= dt;
+            if (this.activeEffects[type].duration <= 0) {
+                this.removeEffect(type);
+            }
+        }
+    },
+
+    updateUI() {
+        const container = document.getElementById('effectTags');
+        container.innerHTML = '';
+
+        for (const type in this.activeEffects) {
+            const effect = this.activeEffects[type];
+            const tag = document.createElement('span');
+
+            let className = 'effect-tag ';
+            if (['speedBoost', 'shield', 'agility', 'miniShield', 'slowmo'].includes(type)) {
+                className += 'buff';
+            } else if (['gridDistort', 'visionFog', 'gravityFlip'].includes(type)) {
+                className += 'debuff';
+            } else {
+                className += 'special';
+            }
+
+            tag.className = className;
+            tag.textContent = `${effect.displayName} ${effect.duration.toFixed(1)}s`;
+            container.appendChild(tag);
+        }
+
+        // 视野迷雾效果
+        document.getElementById('visionOverlay').style.opacity =
+            this.hasEffect('visionFog') ? '1' : '0';
+    },
+
+    reset() {
+        this.activeEffects = {};
+        this.updateUI();
+    }
+};
+
+// ============================================
+// 虚假核心
+// ============================================
+class FakeCore {
+    constructor() {
+        const margin = 100;
+        this.x = margin + Math.random() * (canvas.width - margin * 2);
+        this.y = margin + Math.random() * (canvas.height - margin * 2);
+        this.size = 18 + Math.random() * 12;
+        this.rotation = Math.random() * Math.PI * 2;
+        this.rotationSpeed = (Math.random() - 0.5) * 3;
+        this.pulsePhase = Math.random() * Math.PI * 2;
+        this.life = 8 + Math.random() * 4;
+        this.collected = false;
+
+        // 随机模仿真实核心的颜色
+        const colors = ['#ff00ff', '#ffff00', '#00ff88', '#ff6600', '#00ffff'];
+        this.color = colors[Math.floor(Math.random() * colors.length)];
+    }
+
+    update(dt) {
+        this.rotation += this.rotationSpeed * dt;
+        this.pulsePhase += dt * 4;
+        this.life -= dt;
+        return this.life > 0 && !this.collected;
+    }
+
+    draw(ctx) {
+        if (this.collected) return;
+
+        ctx.save();
+        ctx.translate(this.x, this.y);
+        ctx.rotate(this.rotation);
+
+        const pulse = 1 + Math.sin(this.pulsePhase) * 0.2;
+        const size = this.size * pulse;
+
+        // 使用虚线表示虚假（但玩家可能看不清）
+        const flicker = Math.sin(this.pulsePhase * 3) > 0.3 ? 1 : 0.7;
+
+        ctx.globalAlpha = flicker;
+
+        const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 2.5);
+        gradient.addColorStop(0, this.color + '55');
+        gradient.addColorStop(0.5, this.color + '22');
+        gradient.addColorStop(1, this.color + '00');
+
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(0, 0, size * 2.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 形状（随机边数）
+        ctx.beginPath();
+        const sides = 3 + Math.floor(Math.random() * 4);
+        for (let i = 0; i < sides; i++) {
+            const angle = (i / sides) * Math.PI * 2 - Math.PI / 2;
+            const px = Math.cos(angle) * size;
+            const py = Math.sin(angle) * size;
+            if (i === 0) ctx.moveTo(px, py);
+            else ctx.lineTo(px, py);
+        }
+        ctx.closePath();
+
+        ctx.fillStyle = this.color + '44';
+        ctx.fill();
+        ctx.strokeStyle = this.color;
+        ctx.lineWidth = 2;
+        ctx.shadowColor = this.color;
+        ctx.shadowBlur = 15;
+        ctx.stroke();
+
+        ctx.restore();
+    }
+
+    checkCollision(player) {
+        if (this.collected) return false;
+        const dx = this.x - player.x;
+        const dy = this.y - player.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        return dist < this.size + player.size;
+    }
+}
+
+const fakeCores = [];
+
+function spawnFakeCores(count) {
+    for (let i = 0; i < count; i++) {
+        fakeCores.push(new FakeCore());
+    }
+}
+
+// ============================================
+// 引力漩涡
+// ============================================
+class GravityVortex {
+    constructor(username) {
+        const margin = 150;
+        this.x = margin + Math.random() * (canvas.width - margin * 2);
+        this.y = margin + Math.random() * (canvas.height - margin * 2);
+        this.radius = 120;
+        this.strength = 300;
+        this.life = 6;
+        this.maxLife = 6;
+        this.rotation = 0;
+        this.username = username;
+    }
+
+    update(dt) {
+        this.rotation += dt * 3;
+        this.life -= dt;
+
+        // 对玩家施加引力
+        const dx = this.x - player.x;
+        const dy = this.y - player.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+
+        if (dist < this.radius * 2 && dist > 10) {
+            const force = this.strength * (1 - dist / (this.radius * 2)) * dt;
+            player.vx += (dx / dist) * force;
+            player.vy += (dy / dist) * force;
+        }
+
+        return this.life > 0;
+    }
+
+    draw(ctx) {
+        ctx.save();
+        ctx.translate(this.x, this.y);
+
+        const alpha = this.life / this.maxLife;
+
+        // 外圈
+        for (let i = 0; i < 3; i++) {
+            ctx.beginPath();
+            ctx.arc(0, 0, this.radius * (0.5 + i * 0.25), 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(255, 100, 255, ${alpha * (0.3 - i * 0.08)})`;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // 螺旋线
+        ctx.rotate(this.rotation);
+        for (let i = 0; i < 4; i++) {
+            ctx.beginPath();
+            const startAngle = (i / 4) * Math.PI * 2;
+            for (let j = 0; j < 50; j++) {
+                const t = j / 50;
+                const angle = startAngle + t * Math.PI * 3;
+                const r = this.radius * t;
+                const px = Math.cos(angle) * r;
+                const py = Math.sin(angle) * r;
+                if (j === 0) ctx.moveTo(px, py);
+                else ctx.lineTo(px, py);
+            }
+            ctx.strokeStyle = `rgba(200, 100, 255, ${alpha * 0.5})`;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        // 中心
+        ctx.beginPath();
+        ctx.arc(0, 0, 10, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(255, 200, 255, ${alpha})`;
+        ctx.shadowColor = '#ff88ff';
+        ctx.shadowBlur = 20;
+        ctx.fill();
+
+        ctx.restore();
+    }
+}
+
+const gravityVortexes = [];
+
+function spawnGravityVortex(username) {
+    gravityVortexes.push(new GravityVortex(username));
+}
+
+// ============================================
+// 中央通知
+// ============================================
+function showCenterNotification(user, action) {
+    const notification = document.getElementById('centerNotification');
+    document.getElementById('notificationUser').textContent = user;
+    document.getElementById('notificationAction').textContent = action;
+
+    notification.classList.add('show');
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 2500);
+}
+
+// ============================================
+// 色调系统
 // ============================================
 const colorThemes = {
-    // 基础紫色调
     base: {
-        bg1: '#1a0033',
-        bg2: '#0f001f',
-        bg3: '#050010',
+        bg1: '#1a0033', bg2: '#0f001f', bg3: '#050010',
         grid: 'rgba(136, 102, 255, 0.15)',
-        accent: '#00ffff',
-        secondary: '#8866ff',
-        player: '#00ffff',
-        glow: '#00ffff'
+        accent: '#00ffff', secondary: '#8866ff',
+        player: '#00ffff', glow: '#00ffff'
     },
-    // 10连击 - 青蓝觉醒
     flow10: {
-        bg1: '#001a33',
-        bg2: '#000f1f',
-        bg3: '#000510',
+        bg1: '#001a33', bg2: '#000f1f', bg3: '#000510',
         grid: 'rgba(0, 200, 255, 0.2)',
-        accent: '#00ffff',
-        secondary: '#00aaff',
-        player: '#00ffff',
-        glow: '#00ddff'
+        accent: '#00ffff', secondary: '#00aaff',
+        player: '#00ffff', glow: '#00ddff'
     },
-    // 50连击 - 金色心流
     flow50: {
-        bg1: '#1a1000',
-        bg2: '#0f0a00',
-        bg3: '#050300',
+        bg1: '#1a1000', bg2: '#0f0a00', bg3: '#050300',
         grid: 'rgba(255, 200, 50, 0.2)',
-        accent: '#ffcc00',
-        secondary: '#ff9900',
-        player: '#ffdd00',
-        glow: '#ffaa00'
+        accent: '#ffcc00', secondary: '#ff9900',
+        player: '#ffdd00', glow: '#ffaa00'
     },
-    // 100连击 - 白金至境
     flow100: {
-        bg1: '#1a1a1a',
-        bg2: '#0f0f0f',
-        bg3: '#050505',
+        bg1: '#1a1a1a', bg2: '#0f0f0f', bg3: '#050505',
         grid: 'rgba(255, 255, 255, 0.25)',
-        accent: '#ffffff',
-        secondary: '#ffdd88',
-        player: '#ffffff',
-        glow: '#ffffaa'
+        accent: '#ffffff', secondary: '#ffdd88',
+        player: '#ffffff', glow: '#ffffaa'
     }
 };
 
@@ -309,7 +1037,6 @@ let currentTheme = { ...colorThemes.base };
 let targetTheme = colorThemes.base;
 
 function lerpColor(a, b, t) {
-    // 解析颜色
     const parseColor = (c) => {
         if (c.startsWith('rgba')) {
             const match = c.match(/[\d.]+/g);
@@ -348,7 +1075,7 @@ function updateTheme(dt) {
 }
 
 // ============================================
-// 音频系统（增强版 - 带节奏控制）
+// 音频系统
 // ============================================
 class AudioSystem {
     constructor() {
@@ -357,7 +1084,6 @@ class AudioSystem {
         this.masterGain = null;
         this.initialized = false;
         this.bpm = 120;
-        this.lastBeat = 0;
         this.beatInterval = 60 / this.bpm;
     }
 
@@ -383,7 +1109,6 @@ class AudioSystem {
 
     playCollect(pitch = 1, intensity = 1) {
         if (!this.enabled || !this.audioCtx) return;
-
         const osc = this.audioCtx.createOscillator();
         const osc2 = this.audioCtx.createOscillator();
         const gain = this.audioCtx.createGain();
@@ -401,7 +1126,6 @@ class AudioSystem {
         osc.connect(gain);
         osc2.connect(gain);
         gain.connect(this.masterGain);
-
         osc.start();
         osc2.start();
         osc.stop(this.audioCtx.currentTime + 0.3);
@@ -410,69 +1134,51 @@ class AudioSystem {
 
     playDash() {
         if (!this.enabled || !this.audioCtx) return;
-
         const osc = this.audioCtx.createOscillator();
         const gain = this.audioCtx.createGain();
 
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(150, this.audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(50, this.audioCtx.currentTime + 0.2);
-
         gain.gain.setValueAtTime(0.15, this.audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.2);
 
         osc.connect(gain);
         gain.connect(this.masterGain);
-
         osc.start();
         osc.stop(this.audioCtx.currentTime + 0.2);
     }
 
     playHit() {
         if (!this.enabled || !this.audioCtx) return;
-
         const osc = this.audioCtx.createOscillator();
-        const noise = this.audioCtx.createOscillator();
         const gain = this.audioCtx.createGain();
 
         osc.type = 'sawtooth';
         osc.frequency.setValueAtTime(100, this.audioCtx.currentTime);
         osc.frequency.exponentialRampToValueAtTime(30, this.audioCtx.currentTime + 0.3);
-
-        noise.type = 'square';
-        noise.frequency.setValueAtTime(50, this.audioCtx.currentTime);
-
         gain.gain.setValueAtTime(0.4, this.audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.4);
 
         osc.connect(gain);
-        noise.connect(gain);
         gain.connect(this.masterGain);
-
         osc.start();
-        noise.start();
         osc.stop(this.audioCtx.currentTime + 0.4);
-        noise.stop(this.audioCtx.currentTime + 0.4);
     }
 
     playFlowUp() {
         if (!this.enabled || !this.audioCtx) return;
-
-        const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+        const notes = [523.25, 659.25, 783.99, 1046.50];
         notes.forEach((freq, i) => {
             const osc = this.audioCtx.createOscillator();
             const gain = this.audioCtx.createGain();
-
             osc.type = 'sine';
             osc.frequency.value = freq;
-
             gain.gain.setValueAtTime(0, this.audioCtx.currentTime + i * 0.1);
             gain.gain.linearRampToValueAtTime(0.2, this.audioCtx.currentTime + i * 0.1 + 0.05);
             gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + i * 0.1 + 0.3);
-
             osc.connect(gain);
             gain.connect(this.masterGain);
-
             osc.start(this.audioCtx.currentTime + i * 0.1);
             osc.stop(this.audioCtx.currentTime + i * 0.1 + 0.4);
         });
@@ -480,26 +1186,22 @@ class AudioSystem {
 
     playBeat(intensity = 1) {
         if (!this.enabled || !this.audioCtx) return;
-
         const osc = this.audioCtx.createOscillator();
         const gain = this.audioCtx.createGain();
 
         osc.type = 'sine';
         osc.frequency.value = 55 * intensity;
-
         gain.gain.setValueAtTime(0.1 * intensity, this.audioCtx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.2);
 
         osc.connect(gain);
         gain.connect(this.masterGain);
-
         osc.start();
         osc.stop(this.audioCtx.currentTime + 0.2);
     }
 
     playWarning() {
         if (!this.enabled || !this.audioCtx) return;
-
         const osc = this.audioCtx.createOscillator();
         const gain = this.audioCtx.createGain();
 
@@ -507,16 +1209,65 @@ class AudioSystem {
         osc.frequency.setValueAtTime(200, this.audioCtx.currentTime);
         osc.frequency.setValueAtTime(150, this.audioCtx.currentTime + 0.1);
         osc.frequency.setValueAtTime(200, this.audioCtx.currentTime + 0.2);
-
         gain.gain.setValueAtTime(0.1, this.audioCtx.currentTime);
-        gain.gain.setValueAtTime(0.1, this.audioCtx.currentTime + 0.3);
         gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.4);
 
         osc.connect(gain);
         gain.connect(this.masterGain);
-
         osc.start();
         osc.stop(this.audioCtx.currentTime + 0.4);
+    }
+
+    playGiftSound() {
+        if (!this.enabled || !this.audioCtx) return;
+        const notes = [392, 523.25, 659.25];
+        notes.forEach((freq, i) => {
+            const osc = this.audioCtx.createOscillator();
+            const gain = this.audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.value = freq;
+            gain.gain.setValueAtTime(0.25, this.audioCtx.currentTime + i * 0.08);
+            gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + i * 0.08 + 0.2);
+            osc.connect(gain);
+            gain.connect(this.masterGain);
+            osc.start(this.audioCtx.currentTime + i * 0.08);
+            osc.stop(this.audioCtx.currentTime + i * 0.08 + 0.25);
+        });
+    }
+
+    playCommandSound() {
+        if (!this.enabled || !this.audioCtx) return;
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(300, this.audioCtx.currentTime);
+        osc.frequency.setValueAtTime(400, this.audioCtx.currentTime + 0.1);
+        osc.frequency.setValueAtTime(500, this.audioCtx.currentTime + 0.2);
+        gain.gain.setValueAtTime(0.15, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.4);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + 0.4);
+    }
+
+    playFakeHit() {
+        if (!this.enabled || !this.audioCtx) return;
+        const osc = this.audioCtx.createOscillator();
+        const gain = this.audioCtx.createGain();
+
+        osc.type = 'square';
+        osc.frequency.setValueAtTime(150, this.audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(80, this.audioCtx.currentTime + 0.15);
+        gain.gain.setValueAtTime(0.3, this.audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.01, this.audioCtx.currentTime + 0.2);
+
+        osc.connect(gain);
+        gain.connect(this.masterGain);
+        osc.start();
+        osc.stop(this.audioCtx.currentTime + 0.2);
     }
 }
 
@@ -537,8 +1288,7 @@ const game = {
     gridOffset: 0,
     difficulty: 1,
     difficultyTimer: 0,
-    flowState: 0, // 0: normal, 1: flow10, 2: flow50, 3: flow100
-    flowTransition: 0,
+    flowState: 0,
     gameOver: false,
     coresCollected: 0,
     particleBrightness: 1,
@@ -573,7 +1323,7 @@ document.addEventListener('mousemove', (e) => {
 });
 
 // ============================================
-// 玩家（正八面体）
+// 玩家
 // ============================================
 class Player {
     constructor() {
@@ -599,27 +1349,35 @@ class Player {
     update(dt) {
         if (game.gameOver) return;
 
+        // 效果修正
+        let agilityMod = effectSystem.hasEffect('agility') ? 1.5 : 1;
+        let speedBoostMod = effectSystem.hasEffect('speedBoost') ? 1.3 : 1;
+        let slowmoMod = effectSystem.hasEffect('slowmo') ? 0.6 : 1;
+
         let ax = 0, ay = 0;
-        const baseAcceleration = 800 * game.speedMultiplier;
+        const baseAcceleration = 800 * game.speedMultiplier * agilityMod * slowmoMod;
         const acceleration = this.isDashing ? baseAcceleration * 2.5 : baseAcceleration;
 
-        if (input.keys['w'] || input.keys['arrowup']) ay -= acceleration;
-        if (input.keys['s'] || input.keys['arrowdown']) ay += acceleration;
-        if (input.keys['a'] || input.keys['arrowleft']) ax -= acceleration;
-        if (input.keys['d'] || input.keys['arrowright']) ax += acceleration;
+        // 重力翻转效果
+        let gravityFlipMod = effectSystem.hasEffect('gravityFlip') ? -1 : 1;
+
+        if (input.keys['w'] || input.keys['arrowup']) ay -= acceleration * gravityFlipMod;
+        if (input.keys['s'] || input.keys['arrowdown']) ay += acceleration * gravityFlipMod;
+        if (input.keys['a'] || input.keys['arrowleft']) ax -= acceleration * gravityFlipMod;
+        if (input.keys['d'] || input.keys['arrowright']) ax += acceleration * gravityFlipMod;
 
         const dx = input.mouse.x - this.x;
         const dy = input.mouse.y - this.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
         if (dist > 50) {
-            ax += (dx / dist) * 120;
-            ay += (dy / dist) * 120;
+            ax += (dx / dist) * 120 * agilityMod;
+            ay += (dy / dist) * 120 * agilityMod;
         }
 
         if (input.dash && this.dashCooldown <= 0 && !this.isDashing) {
             this.isDashing = true;
-            this.dashCooldown = 1.2;
-            const dashSpeed = 900 * game.speedMultiplier;
+            this.dashCooldown = 1.2 / agilityMod;
+            const dashSpeed = 900 * game.speedMultiplier * speedBoostMod;
             const angle = Math.atan2(dy, dx);
             this.vx += Math.cos(angle) * dashSpeed;
             this.vy += Math.sin(angle) * dashSpeed;
@@ -636,7 +1394,7 @@ class Player {
         }
 
         if (this.dashCooldown > 0) this.dashCooldown -= dt;
-        if (this.isDashing && this.dashCooldown < 1.0) this.isDashing = false;
+        if (this.isDashing && this.dashCooldown < 1.0 / agilityMod) this.isDashing = false;
         if (this.invincible > 0) this.invincible -= dt;
 
         this.vx += ax * dt;
@@ -646,7 +1404,7 @@ class Player {
         this.vx *= Math.pow(damping, dt * 60);
         this.vy *= Math.pow(damping, dt * 60);
 
-        const baseMaxSpeed = 600 * game.speedMultiplier;
+        const baseMaxSpeed = 600 * game.speedMultiplier * speedBoostMod * slowmoMod;
         const maxSpeed = this.isDashing ? baseMaxSpeed * 2 : baseMaxSpeed;
         const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
         if (speed > maxSpeed) {
@@ -665,19 +1423,27 @@ class Player {
 
         this.rotationSpeed = speed * 0.003;
         this.rotation += this.rotationSpeed * dt * 60;
-
         this.glowIntensity = (1 + speed / 500) * game.particleBrightness;
 
         this.trail.unshift({ x: this.x, y: this.y, age: 0 });
-        if (this.trail.length > this.maxTrailLength) {
-            this.trail.pop();
-        }
+        if (this.trail.length > this.maxTrailLength) this.trail.pop();
         this.trail.forEach(p => p.age += dt);
     }
 
     draw(ctx) {
         ctx.save();
         ctx.translate(this.x, this.y);
+
+        // 护盾效果
+        if (effectSystem.hasEffect('shield') || effectSystem.hasEffect('miniShield')) {
+            ctx.beginPath();
+            ctx.arc(0, 0, this.size * 2, 0, Math.PI * 2);
+            ctx.strokeStyle = `rgba(0, 255, 200, ${0.5 + Math.sin(game.time * 5) * 0.3})`;
+            ctx.lineWidth = 3;
+            ctx.shadowColor = '#00ffc8';
+            ctx.shadowBlur = 20;
+            ctx.stroke();
+        }
 
         // 无敌闪烁
         if (this.invincible > 0 && Math.floor(this.invincible * 10) % 2 === 0) {
@@ -688,21 +1454,16 @@ class Player {
         if (this.trail.length > 1) {
             ctx.beginPath();
             ctx.moveTo(0, 0);
-
             for (let i = 0; i < this.trail.length; i++) {
                 const p = this.trail[i];
-                const relX = p.x - this.x;
-                const relY = p.y - this.y;
-                ctx.lineTo(relX, relY);
+                ctx.lineTo(p.x - this.x, p.y - this.y);
             }
-
             const gradient = ctx.createLinearGradient(0, 0,
                 this.trail[this.trail.length - 1].x - this.x,
                 this.trail[this.trail.length - 1].y - this.y);
             gradient.addColorStop(0, currentTheme.player + 'cc');
             gradient.addColorStop(0.5, currentTheme.secondary + '66');
             gradient.addColorStop(1, currentTheme.secondary + '00');
-
             ctx.strokeStyle = gradient;
             ctx.lineWidth = this.size * 0.6;
             ctx.lineCap = 'round';
@@ -715,7 +1476,6 @@ class Player {
         gradient.addColorStop(0, currentTheme.glow + '66');
         gradient.addColorStop(0.5, currentTheme.secondary + '33');
         gradient.addColorStop(1, currentTheme.secondary + '00');
-
         ctx.fillStyle = gradient;
         ctx.beginPath();
         ctx.arc(0, 0, glowSize * 2, 0, Math.PI * 2);
@@ -734,7 +1494,6 @@ class Player {
             else ctx.lineTo(px, py);
         }
         ctx.closePath();
-
         ctx.fillStyle = currentTheme.player + '4d';
         ctx.fill();
         ctx.strokeStyle = currentTheme.player;
@@ -748,11 +1507,9 @@ class Player {
         for (let i = 0; i < 4; i++) {
             const angle = (i / 4) * Math.PI * 2 + this.rotation * 0.5;
             ctx.moveTo(0, 0);
-            const px = Math.cos(angle) * this.size * 0.8;
-            const py = Math.sin(angle) * this.size * 0.8;
-            ctx.lineTo(px, py);
+            ctx.lineTo(Math.cos(angle) * this.size * 0.8, Math.sin(angle) * this.size * 0.8);
         }
-        ctx.strokeStyle = `rgba(255, 255, 255, 0.6)`;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
         ctx.lineWidth = 1;
         ctx.stroke();
 
@@ -769,7 +1526,7 @@ class Player {
 }
 
 // ============================================
-// 坍缩区（红色危险区域）
+// 坍缩区
 // ============================================
 class CollapseZone {
     constructor() {
@@ -795,7 +1552,6 @@ class CollapseZone {
         this.x = margin + Math.random() * (canvas.width - margin * 2);
         this.y = margin + Math.random() * (canvas.height - margin * 2);
 
-        // 避开玩家
         const dx = this.x - player.x;
         const dy = this.y - player.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -814,9 +1570,7 @@ class CollapseZone {
     update(dt) {
         if (!this.active) {
             this.spawnDelay -= dt * game.difficulty;
-            if (this.spawnDelay <= 0) {
-                this.spawn();
-            }
+            if (this.spawnDelay <= 0) this.spawn();
             return;
         }
 
@@ -825,9 +1579,7 @@ class CollapseZone {
         if (this.phase === 'warning') {
             this.warningTime -= dt;
             this.radius = this.maxRadius * (1 - this.warningTime / (1.5 / game.difficulty)) * 0.3;
-            if (this.warningTime <= 0) {
-                this.phase = 'expanding';
-            }
+            if (this.warningTime <= 0) this.phase = 'expanding';
         } else if (this.phase === 'expanding') {
             this.radius += (this.maxRadius - this.radius) * dt * 5;
             if (this.radius >= this.maxRadius * 0.95) {
@@ -836,14 +1588,10 @@ class CollapseZone {
             }
         } else if (this.phase === 'active') {
             this.activeTime -= dt;
-            if (this.activeTime <= 0) {
-                this.phase = 'collapsing';
-            }
+            if (this.activeTime <= 0) this.phase = 'collapsing';
         } else if (this.phase === 'collapsing') {
             this.radius -= dt * 150;
-            if (this.radius <= 0) {
-                this.reset();
-            }
+            if (this.radius <= 0) this.reset();
         }
     }
 
@@ -856,16 +1604,12 @@ class CollapseZone {
         const pulse = 1 + Math.sin(this.pulsePhase) * 0.1;
         const drawRadius = this.radius * pulse;
 
-        // 危险区域发光
         const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, drawRadius * 1.5);
-
         if (this.phase === 'warning') {
             gradient.addColorStop(0, 'rgba(255, 50, 50, 0.1)');
-            gradient.addColorStop(0.5, 'rgba(255, 0, 0, 0.05)');
             gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
         } else {
             gradient.addColorStop(0, 'rgba(255, 0, 50, 0.4)');
-            gradient.addColorStop(0.5, 'rgba(255, 0, 0, 0.2)');
             gradient.addColorStop(1, 'rgba(255, 0, 0, 0)');
         }
 
@@ -874,10 +1618,8 @@ class CollapseZone {
         ctx.arc(0, 0, drawRadius * 1.5, 0, Math.PI * 2);
         ctx.fill();
 
-        // 核心区域
         ctx.beginPath();
         ctx.arc(0, 0, drawRadius, 0, Math.PI * 2);
-
         if (this.phase === 'warning') {
             ctx.strokeStyle = `rgba(255, 100, 100, ${0.3 + Math.sin(this.pulsePhase * 2) * 0.3})`;
             ctx.setLineDash([10, 10]);
@@ -887,13 +1629,11 @@ class CollapseZone {
             ctx.fillStyle = 'rgba(255, 0, 50, 0.15)';
             ctx.fill();
         }
-
         ctx.lineWidth = 3;
         ctx.shadowColor = '#ff0044';
         ctx.shadowBlur = 20;
         ctx.stroke();
 
-        // 内部纹理
         if (this.phase !== 'warning') {
             ctx.setLineDash([]);
             for (let i = 0; i < 6; i++) {
@@ -907,7 +1647,6 @@ class CollapseZone {
             }
         }
 
-        // 警告标志
         if (this.phase === 'warning') {
             ctx.font = 'bold 24px Courier New';
             ctx.fillStyle = `rgba(255, 100, 100, ${0.5 + Math.sin(this.pulsePhase * 3) * 0.5})`;
@@ -921,6 +1660,7 @@ class CollapseZone {
 
     checkCollision(player) {
         if (!this.active || this.phase === 'warning' || this.phase === 'collapsing') return false;
+        if (player.invincible > 0 || effectSystem.hasEffect('shield') || effectSystem.hasEffect('miniShield')) return false;
         const dx = this.x - player.x;
         const dy = this.y - player.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
@@ -941,7 +1681,6 @@ class ResourceCore {
         this.x = margin + Math.random() * (canvas.width - margin * 2);
         this.y = margin + Math.random() * (canvas.height - margin * 2);
 
-        // 避开坍缩区
         for (const zone of collapseZones) {
             if (zone.active) {
                 const dx = this.x - zone.x;
@@ -955,7 +1694,6 @@ class ResourceCore {
             }
         }
 
-        // 边界检查
         this.x = Math.max(margin, Math.min(canvas.width - margin, this.x));
         this.y = Math.max(margin, Math.min(canvas.height - margin, this.y));
 
@@ -972,7 +1710,6 @@ class ResourceCore {
         this.color = this.type.color;
         this.shape = this.type.shape;
         this.points = this.type.points;
-
         this.size = 18 + Math.random() * 12;
         this.rotation = Math.random() * Math.PI * 2;
         this.rotationSpeed = (Math.random() - 0.5) * 3;
@@ -1016,7 +1753,6 @@ class ResourceCore {
             else ctx.lineTo(px, py);
         }
         ctx.closePath();
-
         ctx.fillStyle = this.color + '55';
         ctx.fill();
         ctx.strokeStyle = this.color;
@@ -1031,8 +1767,7 @@ class ResourceCore {
     getSides() {
         switch (this.shape) {
             case 'triangle': return 3;
-            case 'square': return 4;
-            case 'diamond': return 4;
+            case 'square': case 'diamond': return 4;
             case 'pentagon': return 5;
             case 'hexagon': return 6;
             default: return 6;
@@ -1043,25 +1778,18 @@ class ResourceCore {
         if (this.collected) return false;
         const dx = this.x - player.x;
         const dy = this.y - player.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        return dist < this.size + player.size;
+        return Math.sqrt(dx * dx + dy * dy) < this.size + player.size;
     }
 }
 
 // ============================================
-// 粒子系统
+// 粒子和光波
 // ============================================
 class Particle {
     constructor(x, y, vx, vy, color, life = 1, brightness = 1) {
-        this.x = x;
-        this.y = y;
-        this.vx = vx;
-        this.vy = vy;
-        this.color = color;
-        this.life = life;
-        this.maxLife = life;
-        this.size = 3 + Math.random() * 5;
-        this.brightness = brightness;
+        this.x = x; this.y = y; this.vx = vx; this.vy = vy;
+        this.color = color; this.life = life; this.maxLife = life;
+        this.size = 3 + Math.random() * 5; this.brightness = brightness;
     }
 
     update(dt) {
@@ -1077,24 +1805,16 @@ class Particle {
         const alpha = (this.life / this.maxLife) * this.brightness;
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.size * alpha, 0, Math.PI * 2);
-        const alphaHex = Math.floor(alpha * 255).toString(16).padStart(2, '0');
-        ctx.fillStyle = this.color + alphaHex;
+        ctx.fillStyle = this.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
         ctx.fill();
     }
 }
 
-// ============================================
-// 光波效果
-// ============================================
 class Shockwave {
     constructor(x, y, color, maxRadius = 200) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-        this.radius = 0;
-        this.maxRadius = maxRadius;
-        this.life = 1;
-        this.speed = 500 * game.speedMultiplier;
+        this.x = x; this.y = y; this.color = color;
+        this.radius = 0; this.maxRadius = maxRadius;
+        this.life = 1; this.speed = 500 * game.speedMultiplier;
     }
 
     update(dt) {
@@ -1127,11 +1847,10 @@ function initGame() {
     particles.length = 0;
     shockwaves.length = 0;
     collapseZones.length = 0;
+    fakeCores.length = 0;
+    gravityVortexes.length = 0;
 
-    for (let i = 0; i < 8; i++) {
-        resources.push(new ResourceCore());
-    }
-
+    for (let i = 0; i < 8; i++) resources.push(new ResourceCore());
     for (let i = 0; i < 3; i++) {
         const zone = new CollapseZone();
         zone.spawnDelay = 3 + i * 2;
@@ -1156,8 +1875,12 @@ function initGame() {
     currentTheme = { ...colorThemes.base };
     targetTheme = colorThemes.base;
 
+    danmakuSystem.reset();
+    effectSystem.reset();
+
     document.getElementById('gameOver').style.display = 'none';
     document.getElementById('warningOverlay').style.opacity = '0';
+    document.getElementById('visionOverlay').style.opacity = '0';
 
     updateUI();
 }
@@ -1173,19 +1896,21 @@ function drawBackground(ctx) {
     bgGradient.addColorStop(0, currentTheme.bg1);
     bgGradient.addColorStop(0.5, currentTheme.bg2);
     bgGradient.addColorStop(1, currentTheme.bg3);
-
     ctx.fillStyle = bgGradient;
     ctx.fillRect(0, 0, canvas.width, canvas.height);
 
     const gridSize = 80;
     const offset = game.gridOffset % gridSize;
-    const gridSpeed = game.speedMultiplier;
+
+    // 网格扭曲效果
+    const distortAmount = effectSystem.hasEffect('gridDistort') ? 50 : 15;
+    const distortSpeed = effectSystem.hasEffect('gridDistort') ? 3 : 1;
 
     ctx.strokeStyle = currentTheme.grid;
     ctx.lineWidth = 1;
 
     for (let x = -gridSize + offset; x < canvas.width + gridSize; x += gridSize) {
-        const wave = Math.sin((x + game.time * 50 * gridSpeed) * 0.01) * 15;
+        const wave = Math.sin((x + game.time * 50 * distortSpeed) * 0.01) * distortAmount;
         ctx.beginPath();
         ctx.moveTo(x + wave, 0);
         ctx.lineTo(x - wave, canvas.height);
@@ -1193,14 +1918,13 @@ function drawBackground(ctx) {
     }
 
     for (let y = -gridSize + offset; y < canvas.height + gridSize; y += gridSize) {
-        const wave = Math.sin((y + game.time * 30 * gridSpeed) * 0.01) * 15;
+        const wave = Math.sin((y + game.time * 30 * distortSpeed) * 0.01) * distortAmount;
         ctx.beginPath();
         ctx.moveTo(0, y + wave);
         ctx.lineTo(canvas.width, y - wave);
         ctx.stroke();
     }
 
-    // 透视网格
     ctx.strokeStyle = currentTheme.accent + '14';
     const horizon = canvas.height * 0.4;
     for (let i = 0; i < 20; i++) {
@@ -1226,7 +1950,6 @@ function updateFlowState() {
         const oldState = game.flowState;
         game.flowState = newFlowState;
 
-        // 色调切换
         switch (newFlowState) {
             case 0: targetTheme = colorThemes.base; break;
             case 1: targetTheme = colorThemes.flow10; break;
@@ -1234,20 +1957,14 @@ function updateFlowState() {
             case 3: targetTheme = colorThemes.flow100; break;
         }
 
-        // 亮度和速度
         game.particleBrightness = 1 + newFlowState * 0.3;
         game.speedMultiplier = 1 + newFlowState * 0.15;
-
-        // BPM
         audio.setBPM(120 + newFlowState * 20);
 
-        // 升级提示
         if (newFlowState > oldState) {
             const flowText = ['', 'FLOW x10', 'FLOW x50', 'FLOW x100'][newFlowState];
             showFlowState(flowText);
             audio.playFlowUp();
-
-            // 全屏光波
             shockwaves.push(new Shockwave(player.x, player.y, currentTheme.accent, 500));
         }
     }
@@ -1259,7 +1976,6 @@ function showFlowState(text) {
     el.style.color = targetTheme.accent;
     el.style.opacity = '1';
     el.style.transform = 'translate(-50%, -50%) scale(1.2)';
-
     setTimeout(() => {
         el.style.opacity = '0';
         el.style.transform = 'translate(-50%, -50%) scale(1)';
@@ -1267,49 +1983,55 @@ function showFlowState(text) {
 }
 
 // ============================================
-// 碰撞与收集处理
+// 收集处理
 // ============================================
 function handleCollection(resource) {
     resource.collected = true;
     game.coresCollected++;
-
     game.combo++;
     if (game.combo > game.maxCombo) game.maxCombo = game.combo;
-
     game.comboTimer = game.comboTimerMax;
     game.multiplier = 1 + game.combo * 0.1;
 
     const points = Math.floor(resource.points * game.multiplier * game.difficulty);
     game.score += points;
-
     game.screenShake.intensity = 10 + game.flowState * 3;
 
     const particleCount = 30 + game.flowState * 10;
     for (let i = 0; i < particleCount; i++) {
         const angle = (i / particleCount) * Math.PI * 2;
         const speed = 150 + Math.random() * 250;
-        particles.push(new Particle(
-            resource.x, resource.y,
-            Math.cos(angle) * speed,
-            Math.sin(angle) * speed,
-            resource.color, 0.8, game.particleBrightness
-        ));
+        particles.push(new Particle(resource.x, resource.y,
+            Math.cos(angle) * speed, Math.sin(angle) * speed,
+            resource.color, 0.8, game.particleBrightness));
     }
 
     shockwaves.push(new Shockwave(resource.x, resource.y, resource.color, 200 + game.flowState * 50));
-
-    const pitch = 0.8 + (resource.points / 30) * 0.6 + game.flowState * 0.1;
-    audio.playCollect(pitch, game.particleBrightness);
-
+    audio.playCollect(0.8 + (resource.points / 30) * 0.6 + game.flowState * 0.1, game.particleBrightness);
     updateFlowState();
-
     setTimeout(() => resource.reset(), 300 / game.speedMultiplier);
+    updateUI();
+}
 
+function handleFakeCoreHit(core) {
+    core.collected = true;
+    game.score = Math.max(0, game.score - 50);
+    game.screenShake.intensity = 15;
+
+    for (let i = 0; i < 20; i++) {
+        const angle = Math.random() * Math.PI * 2;
+        const speed = 100 + Math.random() * 150;
+        particles.push(new Particle(core.x, core.y,
+            Math.cos(angle) * speed, Math.sin(angle) * speed,
+            '#888888', 0.5, 1));
+    }
+
+    audio.playFakeHit();
     updateUI();
 }
 
 function handleCollapseHit() {
-    if (player.invincible > 0) return;
+    if (player.invincible > 0 || effectSystem.hasEffect('shield') || effectSystem.hasEffect('miniShield')) return;
 
     game.combo = 0;
     game.flowState = 0;
@@ -1320,33 +2042,23 @@ function handleCollapseHit() {
     audio.setBPM(120);
 
     player.invincible = 2;
-
     game.screenShake.intensity = 25;
 
     document.getElementById('warningOverlay').style.opacity = '0.8';
-    setTimeout(() => {
-        document.getElementById('warningOverlay').style.opacity = '0';
-    }, 300);
+    setTimeout(() => document.getElementById('warningOverlay').style.opacity = '0', 300);
 
     audio.playHit();
 
-    // 危险粒子
     for (let i = 0; i < 50; i++) {
         const angle = Math.random() * Math.PI * 2;
         const speed = 200 + Math.random() * 300;
-        particles.push(new Particle(
-            player.x, player.y,
-            Math.cos(angle) * speed,
-            Math.sin(angle) * speed,
-            '#ff0044', 1, 1.5
-        ));
+        particles.push(new Particle(player.x, player.y,
+            Math.cos(angle) * speed, Math.sin(angle) * speed,
+            '#ff0044', 1, 1.5));
     }
 
     shockwaves.push(new Shockwave(player.x, player.y, '#ff0044', 300));
-
-    // 减分
     game.score = Math.max(0, game.score - 100 * game.difficulty);
-
     updateUI();
 }
 
@@ -1354,26 +2066,17 @@ function handleCollapseHit() {
 // UI更新
 // ============================================
 function updateUI() {
-    const uiEl = document.getElementById('ui');
-    const scoreEl = document.getElementById('score');
-    const comboEl = document.getElementById('comboValue');
-    const comboBarFill = document.getElementById('comboBarFill');
-    const comboContainer = document.getElementById('comboContainer');
-
-    scoreEl.textContent = game.score.toLocaleString();
-    scoreEl.style.color = currentTheme.accent;
-
+    document.getElementById('score').textContent = game.score.toLocaleString();
+    document.getElementById('score').style.color = currentTheme.accent;
     document.getElementById('multiplier').textContent = `倍率: ${game.multiplier.toFixed(1)}x`;
     document.getElementById('difficulty').textContent = `难度: ${game.difficulty.toFixed(1)}`;
-
-    comboEl.textContent = game.combo;
-    comboEl.style.color = currentTheme.accent;
+    document.getElementById('comboValue').textContent = game.combo;
+    document.getElementById('comboValue').style.color = currentTheme.accent;
 
     const comboProgress = (game.comboTimer / game.comboTimerMax) * 100;
-    comboBarFill.style.width = `${comboProgress}%`;
-    comboBarFill.style.background = `linear-gradient(90deg, ${currentTheme.accent}, ${currentTheme.secondary})`;
-
-    comboContainer.style.borderColor = currentTheme.accent;
+    document.getElementById('comboBarFill').style.width = `${comboProgress}%`;
+    document.getElementById('comboBarFill').style.background = `linear-gradient(90deg, ${currentTheme.accent}, ${currentTheme.secondary})`;
+    document.getElementById('comboContainer').style.borderColor = currentTheme.accent;
 
     document.getElementById('maxCombo').textContent = `最高连击: ${game.maxCombo}`;
     document.getElementById('surviveTime').textContent = `存活时间: ${Math.floor(game.time)}s`;
@@ -1381,24 +2084,18 @@ function updateUI() {
 }
 
 // ============================================
-// 难度递增系统
+// 难度递增
 // ============================================
 function updateDifficulty(dt) {
     game.difficultyTimer += dt;
-
-    // 每15秒增加难度
     if (game.difficultyTimer >= 15) {
         game.difficultyTimer = 0;
         game.difficulty += 0.2;
-
-        // 增加坍缩区
         if (collapseZones.length < 8 && Math.random() < 0.5) {
             const zone = new CollapseZone();
             zone.spawnDelay = 1;
             collapseZones.push(zone);
         }
-
-        // 增加资源
         if (resources.length < 15 && Math.random() < 0.4) {
             resources.push(new ResourceCore());
         }
@@ -1442,12 +2139,12 @@ function gameLoop(timestamp) {
         }
     }
 
-    // 难度
     if (!game.gameOver) {
         updateDifficulty(dt);
+        danmakuSystem.update(dt);
+        effectSystem.update(dt);
     }
 
-    // 色调过渡
     updateTheme(dt);
 
     // 屏幕震动
@@ -1466,14 +2163,25 @@ function gameLoop(timestamp) {
     resources.forEach(r => r.update(dt));
     collapseZones.forEach(z => z.update(dt));
 
-    // 资源碰撞
+    // 引力漩涡
+    for (let i = gravityVortexes.length - 1; i >= 0; i--) {
+        if (!gravityVortexes[i].update(dt)) gravityVortexes.splice(i, 1);
+    }
+
+    // 虚假核心
+    for (let i = fakeCores.length - 1; i >= 0; i--) {
+        if (!fakeCores[i].update(dt)) fakeCores.splice(i, 1);
+    }
+
+    // 碰撞检测
     resources.forEach(r => {
-        if (r.checkCollision(player)) {
-            handleCollection(r);
-        }
+        if (r.checkCollision(player)) handleCollection(r);
     });
 
-    // 坍缩区碰撞
+    fakeCores.forEach(fc => {
+        if (fc.checkCollision(player)) handleFakeCoreHit(fc);
+    });
+
     if (!game.gameOver) {
         for (const zone of collapseZones) {
             if (zone.checkCollision(player)) {
@@ -1485,16 +2193,12 @@ function gameLoop(timestamp) {
 
     // 粒子
     for (let i = particles.length - 1; i >= 0; i--) {
-        if (!particles[i].update(dt)) {
-            particles.splice(i, 1);
-        }
+        if (!particles[i].update(dt)) particles.splice(i, 1);
     }
 
     // 光波
     for (let i = shockwaves.length - 1; i >= 0; i--) {
-        if (!shockwaves[i].update(dt)) {
-            shockwaves.splice(i, 1);
-        }
+        if (!shockwaves[i].update(dt)) shockwaves.splice(i, 1);
     }
 
     // 渲染
@@ -1502,6 +2206,9 @@ function gameLoop(timestamp) {
     ctx.translate(game.screenShake.x, game.screenShake.y);
 
     drawBackground(ctx);
+
+    // 引力漩涡
+    gravityVortexes.forEach(v => v.draw(ctx));
 
     // 坍缩区
     collapseZones.forEach(z => z.draw(ctx));
@@ -1511,6 +2218,9 @@ function gameLoop(timestamp) {
 
     // 资源
     resources.forEach(r => r.draw(ctx));
+
+    // 虚假核心
+    fakeCores.forEach(fc => fc.draw(ctx));
 
     // 粒子
     particles.forEach(p => p.draw(ctx));
@@ -1535,10 +2245,7 @@ function gameLoop(timestamp) {
 
     ctx.restore();
 
-    // UI持续更新
-    if (!game.gameOver) {
-        updateUI();
-    }
+    if (!game.gameOver) updateUI();
 
     requestAnimationFrame(gameLoop);
 }
@@ -1559,10 +2266,10 @@ document.getElementById('restartBtn').addEventListener('click', initGame);
 initGame();
 gameLoop(0);
 
-console.log('🚀 星际调度员 - Interstellar Dispatcher v2.0');
+console.log('🚀 星际调度员 - Interstellar Dispatcher v3.0');
 console.log('🎮 WASD/方向键移动 | 鼠标瞄准 | 空格冲刺');
-console.log('⚠️ 避开红色坍缩区，保持心流连击！');
-console.log('🌟 连击10/50/100触发心流状态变化！');
+console.log('📺 观众弹幕会实时影响游戏！');
+console.log('🎁 特殊礼物触发独特效果！');
     </script>
 </body>
 </html>
