@@ -441,6 +441,7 @@
     </div>
 
     <div id="gameStats">
+        <div id="health">生命: 3</div>
         <div id="maxCombo">最高连击: 0</div>
         <div id="surviveTime">存活时间: 0s</div>
         <div id="coreCount">收集核心: 0</div>
@@ -770,11 +771,15 @@ const effectSystem = {
     },
 
     update(dt) {
+        const expired = [];
         for (const type in this.activeEffects) {
             this.activeEffects[type].duration -= dt;
             if (this.activeEffects[type].duration <= 0) {
-                this.removeEffect(type);
+                expired.push(type);
             }
+        }
+        for (const type of expired) {
+            this.removeEffect(type);
         }
     },
 
@@ -829,6 +834,7 @@ class FakeCore {
         // 随机模仿真实核心的颜色
         const colors = ['#ff00ff', '#ffff00', '#00ff88', '#ff6600', '#00ffff'];
         this.color = colors[Math.floor(Math.random() * colors.length)];
+        this.sides = 3 + Math.floor(Math.random() * 4);
     }
 
     update(dt) {
@@ -863,9 +869,9 @@ class FakeCore {
         ctx.arc(0, 0, size * 2.5, 0, Math.PI * 2);
         ctx.fill();
 
-        // 形状（随机边数）
+        // 形状
         ctx.beginPath();
-        const sides = 3 + Math.floor(Math.random() * 4);
+        const sides = this.sides;
         for (let i = 0; i < sides; i++) {
             const angle = (i / sides) * Math.PI * 2 - Math.PI / 2;
             const px = Math.cos(angle) * size;
@@ -1040,13 +1046,14 @@ function lerpColor(a, b, t) {
     const parseColor = (c) => {
         if (c.startsWith('rgba')) {
             const match = c.match(/[\d.]+/g);
+            if (!match || match.length < 4) return { r: 0, g: 0, b: 0, a: 1 };
             return { r: +match[0], g: +match[1], b: +match[2], a: +match[3] };
         }
         const hex = c.replace('#', '');
         return {
-            r: parseInt(hex.substr(0, 2), 16),
-            g: parseInt(hex.substr(2, 2), 16),
-            b: parseInt(hex.substr(4, 2), 16),
+            r: parseInt(hex.substr(0, 2), 16) || 0,
+            g: parseInt(hex.substr(2, 2), 16) || 0,
+            b: parseInt(hex.substr(4, 2), 16) || 0,
             a: 1
         };
     };
@@ -1089,11 +1096,17 @@ class AudioSystem {
 
     init() {
         if (this.initialized) return;
-        this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        this.masterGain = this.audioCtx.createGain();
-        this.masterGain.gain.value = 0.3;
-        this.masterGain.connect(this.audioCtx.destination);
-        this.initialized = true;
+        try {
+            this.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            this.masterGain = this.audioCtx.createGain();
+            this.masterGain.gain.value = 0.3;
+            this.masterGain.connect(this.audioCtx.destination);
+            this.initialized = true;
+        } catch (e) {
+            console.warn('AudioContext initialization failed:', e);
+            this.audioCtx = null;
+            this.enabled = false;
+        }
     }
 
     toggle() {
@@ -1292,7 +1305,9 @@ const game = {
     gameOver: false,
     coresCollected: 0,
     particleBrightness: 1,
-    speedMultiplier: 1
+    speedMultiplier: 1,
+    health: 3,
+    maxHealth: 3
 };
 
 // ============================================
@@ -1555,9 +1570,11 @@ class CollapseZone {
         const dx = this.x - player.x;
         const dy = this.y - player.y;
         const dist = Math.sqrt(dx * dx + dy * dy);
-        if (dist < 200) {
+        if (dist < 200 && dist > 0) {
             this.x += (dx / dist) * 200;
             this.y += (dy / dist) * 200;
+        } else if (dist === 0) {
+            this.x += 200;
         }
 
         this.phase = 'warning';
@@ -1734,8 +1751,8 @@ class ResourceCore {
         const brightness = game.particleBrightness;
 
         const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, size * 2.5);
-        gradient.addColorStop(0, this.color + Math.floor(102 * brightness).toString(16).padStart(2,'0'));
-        gradient.addColorStop(0.5, this.color + Math.floor(51 * brightness).toString(16).padStart(2,'0'));
+        gradient.addColorStop(0, this.color + Math.min(255, Math.floor(102 * brightness)).toString(16).padStart(2,'0'));
+        gradient.addColorStop(0.5, this.color + Math.min(255, Math.floor(51 * brightness)).toString(16).padStart(2,'0'));
         gradient.addColorStop(1, this.color + '00');
 
         ctx.fillStyle = gradient;
@@ -1804,8 +1821,8 @@ class Particle {
     draw(ctx) {
         const alpha = (this.life / this.maxLife) * this.brightness;
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size * alpha, 0, Math.PI * 2);
-        ctx.fillStyle = this.color + Math.floor(alpha * 255).toString(16).padStart(2, '0');
+        ctx.arc(this.x, this.y, this.size * Math.min(alpha, 1), 0, Math.PI * 2);
+        ctx.fillStyle = this.color + Math.min(255, Math.max(0, Math.floor(alpha * 255))).toString(16).padStart(2, '0');
         ctx.fill();
     }
 }
@@ -1824,7 +1841,7 @@ class Shockwave {
     }
 
     draw(ctx) {
-        const alpha = Math.floor(this.life * 200 * game.particleBrightness);
+        const alpha = Math.min(255, Math.max(0, Math.floor(this.life * 200 * game.particleBrightness)));
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
         ctx.strokeStyle = this.color + alpha.toString(16).padStart(2, '0');
@@ -1871,6 +1888,7 @@ function initGame() {
     game.coresCollected = 0;
     game.particleBrightness = 1;
     game.speedMultiplier = 1;
+    game.health = game.maxHealth;
 
     currentTheme = { ...colorThemes.base };
     targetTheme = colorThemes.base;
@@ -2041,6 +2059,7 @@ function handleCollapseHit() {
     targetTheme = colorThemes.base;
     audio.setBPM(120);
 
+    game.health--;
     player.invincible = 2;
     game.screenShake.intensity = 25;
 
@@ -2060,6 +2079,18 @@ function handleCollapseHit() {
     shockwaves.push(new Shockwave(player.x, player.y, '#ff0044', 300));
     game.score = Math.max(0, game.score - 100 * game.difficulty);
     updateUI();
+
+    if (game.health <= 0) {
+        triggerGameOver();
+    }
+}
+
+function triggerGameOver() {
+    game.gameOver = true;
+    document.getElementById('finalScore').textContent = game.score.toLocaleString();
+    document.getElementById('finalCombo').textContent = game.maxCombo;
+    document.getElementById('finalTime').textContent = Math.floor(game.time);
+    document.getElementById('gameOver').style.display = 'block';
 }
 
 // ============================================
@@ -2078,6 +2109,7 @@ function updateUI() {
     document.getElementById('comboBarFill').style.background = `linear-gradient(90deg, ${currentTheme.accent}, ${currentTheme.secondary})`;
     document.getElementById('comboContainer').style.borderColor = currentTheme.accent;
 
+    document.getElementById('health').textContent = `生命: ${'❤'.repeat(game.health)}${'♡'.repeat(Math.max(0, game.maxHealth - game.health))}`;
     document.getElementById('maxCombo').textContent = `最高连击: ${game.maxCombo}`;
     document.getElementById('surviveTime').textContent = `存活时间: ${Math.floor(game.time)}s`;
     document.getElementById('coreCount').textContent = `收集核心: ${game.coresCollected}`;
@@ -2105,10 +2137,11 @@ function updateDifficulty(dt) {
 // ============================================
 // 主游戏循环
 // ============================================
-let lastTime = 0;
+let lastTime = -1;
 let beatTimer = 0;
 
 function gameLoop(timestamp) {
+    if (lastTime < 0) lastTime = timestamp;
     const dt = Math.min((timestamp - lastTime) / 1000, 0.1);
     lastTime = timestamp;
 
