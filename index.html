@@ -1619,7 +1619,7 @@ class CollapseZone {
         ctx.translate(this.x, this.y);
 
         const pulse = 1 + Math.sin(this.pulsePhase) * 0.1;
-        const drawRadius = this.radius * pulse;
+        const drawRadius = Math.max(0.1, this.radius * pulse);
 
         const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, drawRadius * 1.5);
         if (this.phase === 'warning') {
@@ -1812,8 +1812,9 @@ class Particle {
     update(dt) {
         this.x += this.vx * dt;
         this.y += this.vy * dt;
-        this.vx *= 0.97;
-        this.vy *= 0.97;
+        const damping = Math.pow(0.97, dt * 60);
+        this.vx *= damping;
+        this.vy *= damping;
         this.life -= dt;
         return this.life > 0;
     }
@@ -2184,7 +2185,7 @@ function gameLoop(timestamp) {
     if (game.screenShake.intensity > 0) {
         game.screenShake.x = (Math.random() - 0.5) * game.screenShake.intensity;
         game.screenShake.y = (Math.random() - 0.5) * game.screenShake.intensity;
-        game.screenShake.intensity *= 0.88;
+        game.screenShake.intensity *= Math.pow(0.88, dt * 60);
         if (game.screenShake.intensity < 0.5) game.screenShake.intensity = 0;
     } else {
         game.screenShake.x = 0;
@@ -2207,15 +2208,15 @@ function gameLoop(timestamp) {
     }
 
     // 碰撞检测
-    resources.forEach(r => {
-        if (r.checkCollision(player)) handleCollection(r);
-    });
-
-    fakeCores.forEach(fc => {
-        if (fc.checkCollision(player)) handleFakeCoreHit(fc);
-    });
-
     if (!game.gameOver) {
+        resources.forEach(r => {
+            if (r.checkCollision(player)) handleCollection(r);
+        });
+
+        fakeCores.forEach(fc => {
+            if (fc.checkCollision(player)) handleFakeCoreHit(fc);
+        });
+
         for (const zone of collapseZones) {
             if (zone.checkCollision(player)) {
                 handleCollapseHit();
